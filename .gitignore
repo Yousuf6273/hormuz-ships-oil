@@ -1,0 +1,14 @@
+# secrets
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# cached raw downloads (rebuildable from the pipeline)
+data/raw/
+
+# os
+.DS_Store
