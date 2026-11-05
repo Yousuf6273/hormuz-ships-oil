@@ -12,3 +12,4 @@ data/raw/
 
 # os
 .DS_Store
+logs/
