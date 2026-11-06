@@ -69,3 +69,45 @@ def granger(t, x, ret="brent_ret", max_lag=10, lags=None):
 def drop_tail(t, h):
     """Drop the last h rows so h-day forward returns never use prices from outside the period."""
     return t.iloc[:-h] if h > 0 else t
+
+
+def predictive(t, x, h, ret="brent", extra=()):
+    """R_{t,h} = a + b*x_t + controls (+ extra regressors); Newey-West lag max(h, 5)."""
+    t = drop_tail(t, h)
+    X = t[[x, *CONTROLS, *extra]]
+    return hac_ols(t[f"{ret}_fwd{h}"].rename("y"), X, lags=max(h, 5))
+
+
+def per_10pct_drop(b):
+    """Change in h-day return (in %) that follows a 10% drop in crossings: x = log(0.9)."""
+    return 100 * b * np.log(0.9)
+
+
+def h1_table(t, x="tanker_total_shock", ret="brent"):
+    rows = []
+    for h in HORIZONS:
+        f = predictive(t, x, h, ret)
+        rows.append((x, h, f.params[x], f.bse[x], f.pvalues[x], per_10pct_drop(f.params[x]), f.rsquared, int(f.nobs)))
+    out = pd.DataFrame(rows, columns=["predictor", "h", "b", "se", "p_raw", "ret_pct_after_10pct_drop", "r2", "n"])
+    out["p_holm"] = correct(out["p_raw"], "holm")
+    return out
+
+
+def h2_table(t, dummy, x="tanker_total_shock", ret="brent"):
+    """Adds disruption dummy D and x*D. H2 predicts the interaction is negative."""
+    t = t.assign(D=dummy.reindex(t.index).fillna(0).astype(float))
+    t = t.assign(xD=t[x] * t["D"])
+    rows = []
+    for h in HORIZONS:
+        f = predictive(t, x, h, ret, extra=("D", "xD"))
+        rows.append((h, f.params[x], f.params["xD"], f.bse["xD"], f.pvalues["xD"], int(t["D"].sum()), int(f.nobs)))
+    out = pd.DataFrame(rows, columns=["h", "b_normal", "b_extra_in_disruption", "se", "p_raw", "disruption_days", "n"])
+    out["p_holm"] = correct(out["p_raw"], "holm")
+    return out
+
+
+def dummy_for(index, periods):
+    d = pd.Series(0, index=index)
+    for start, end in periods:
+        d.loc[start:end] = 1
+    return d

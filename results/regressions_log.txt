@@ -1,0 +1,26 @@
+=== H1 (training): Brent forward return on tanker crossing shock + controls ===
+         predictor  h      b     se  p_raw  ret_pct_after_10pct_drop     r2   n  p_holm
+tanker_total_shock  1 0.0081 0.0070 0.2512                   -0.0851 0.0071 872  0.7537
+tanker_total_shock  3 0.0113 0.0113 0.3201                   -0.1188 0.0076 870  0.7537
+tanker_total_shock  7 0.0113 0.0153 0.4623                   -0.1189 0.0139 866  0.7537
+
+=== H2 (training): extra effect inside the Apr 2024 and Jun 2025 disruption windows ===
+ h  b_normal  b_extra_in_disruption     se  p_raw  disruption_days   n  p_holm
+ 1    0.0065                 0.0168 0.0245 0.4927               19 872  0.5760
+ 3    0.0037                 0.1479 0.0644 0.0216               19 870  0.0647
+ 7    0.0060                 0.0639 0.0601 0.2880               19 866  0.5760
+
+=== H2 (test, out of sample): extra effect inside the March 2026 window ===
+ h  b_normal  b_extra_in_disruption     se  p_raw  disruption_days   n  p_holm
+ 1   -0.0044                -0.0055 0.0092 0.5480               22 337   1.000
+ 3   -0.0118                -0.0041 0.0147 0.7798               22 335   1.000
+ 7    0.0030                -0.0685 0.0236 0.0037               22 331   0.011
+
+=== H3 placebo (training): cargo and fishing crossing shocks ===
+          predictor  h       b     se  p_raw  ret_pct_after_10pct_drop     r2   n  p_holm
+  cargo_total_shock  1 -0.0029 0.0052 0.5757                    0.0306 0.0055 872     1.0
+  cargo_total_shock  3  0.0069 0.0093 0.4528                   -0.0732 0.0070 870     1.0
+  cargo_total_shock  7 -0.0007 0.0135 0.9593                    0.0073 0.0133 866     1.0
+fishing_total_shock  1  0.0014 0.0015 0.3532                   -0.0149 0.0059 872     1.0
+fishing_total_shock  3  0.0040 0.0030 0.1808                   -0.0425 0.0083 870     1.0
+fishing_total_shock  7  0.0055 0.0051 0.2772                   -0.0579 0.0151 866     1.0
