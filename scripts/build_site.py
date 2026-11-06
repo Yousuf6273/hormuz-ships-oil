@@ -17,7 +17,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from hormuz.data import daily_crossings  # noqa: E402
-from hormuz.prices import load_prices  # noqa: E402
+from hormuz.prices import load_prices, settled  # noqa: E402
 
 DOCS = ROOT / "docs"
 REPO = "https://github.com/Yousuf6273/hormuz-ships-oil"
@@ -41,9 +41,9 @@ FIGURES = [
 def brent_series():
     """Brent futures from Yahoo (the study's main source); FRED spot only if Yahoo was never downloaded."""
     try:
-        return load_prices("yahoo")["brent"].dropna()
+        return settled(load_prices("yahoo")["brent"].dropna())
     except (FileNotFoundError, KeyError):
-        return load_prices("fred")["brent"].dropna()
+        return settled(load_prices("fred")["brent"].dropna())
 
 
 def charts(d, brent, last):

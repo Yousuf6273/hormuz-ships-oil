@@ -81,6 +81,14 @@ def pull_all(refresh=False):
     return status
 
 
+def settled(px, now=None):
+    """Drop today's row until every market has closed (22:00 UTC): before that, Yahoo's "close" is a live price."""
+    now = now or pd.Timestamp.now(tz="UTC")
+    if now.hour >= 22:
+        return px
+    return px[px.index < now.tz_localize(None).normalize()]
+
+
 def load_prices(source="yahoo"):
     """Wide table of closes (brent, wti, sp500, vix) from one source; missing series are absent."""
     cols = []

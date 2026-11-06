@@ -2,15 +2,15 @@
 import pandas as pd
 
 from .config import PROCESSED
-from .prices import load_prices
+from .prices import load_prices, settled
 
 SAMPLE_START = "2022-01-01"
 
 
 def main_prices():
-    """Brent and VIX from Yahoo; S&P 500 and WTI from FRED."""
+    """Brent and VIX from Yahoo; S&P 500 and WTI from FRED. Only settled closes (no live prices from today)."""
     y, f = load_prices("yahoo"), load_prices("fred")
-    return pd.concat([y["brent"], f["wti"], f["sp500"], y["vix"]], axis=1, sort=True)
+    return settled(pd.concat([y["brent"], f["wti"], f["sp500"], y["vix"]], axis=1, sort=True))
 
 
 def fred_brent_prices():
