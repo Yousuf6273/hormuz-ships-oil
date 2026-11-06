@@ -1,0 +1,25 @@
+series,period,ships_per_day,pct_of_2025
+strait_tanker,2025 average (base),61.0,100.0
+strait_tanker,Jan–Feb 2026,62.2,102.0
+strait_tanker,Mar 2026,1.0,1.6
+strait_tanker,Apr 2026 → latest,2.8,4.6
+strait_cargo,2025 average (base),55.4,100.0
+strait_cargo,Jan–Feb 2026,65.4,118.1
+strait_cargo,Mar 2026,2.4,4.4
+strait_cargo,Apr 2026 → latest,5.8,10.5
+jebel_ali_tanker,2025 average (base),13.8,100.0
+jebel_ali_tanker,Jan–Feb 2026,14.4,104.5
+jebel_ali_tanker,Mar 2026,2.5,18.2
+jebel_ali_tanker,Apr 2026 → latest,2.6,18.9
+jebel_ali_cargo,2025 average (base),73.8,100.0
+jebel_ali_cargo,Jan–Feb 2026,82.6,112.0
+jebel_ali_cargo,Mar 2026,10.6,14.4
+jebel_ali_cargo,Apr 2026 → latest,17.4,23.6
+fujairah_tanker,2025 average (base),109.0,100.0
+fujairah_tanker,Jan–Feb 2026,105.0,96.3
+fujairah_tanker,Mar 2026,18.6,17.1
+fujairah_tanker,Apr 2026 → latest,60.6,55.6
+fujairah_cargo,2025 average (base),30.4,100.0
+fujairah_cargo,Jan–Feb 2026,35.4,116.3
+fujairah_cargo,Mar 2026,7.0,23.0
+fujairah_cargo,Apr 2026 → latest,48.4,158.9

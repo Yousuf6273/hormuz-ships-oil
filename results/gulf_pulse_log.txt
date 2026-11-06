@@ -1,0 +1,38 @@
+  out = pd.concat([counts, hours], axis=1).reindex(idx).fillna(0)
+  out = pd.concat([counts, hours], axis=1).reindex(idx).fillna(0)
+Days: 2022-01-01 → 2026-11-02; days with no data: jebel_ali 0, fujairah 0
+
+=== Ships per day, and as % of the 2025 average ===
+period            2025 average (base)  Jan–Feb 2026  Mar 2026  Apr 2026 → latest
+series                                                                          
+fujairah_cargo                  100.0         116.3      23.0              158.9
+fujairah_tanker                 100.0          96.3      17.1               55.6
+jebel_ali_cargo                 100.0         112.0      14.4               23.6
+jebel_ali_tanker                100.0         104.5      18.2               18.9
+strait_cargo                    100.0         118.1       4.4               10.5
+strait_tanker                   100.0         102.0       1.6                4.6
+period            2025 average (base)  Jan–Feb 2026  Mar 2026  Apr 2026 → latest
+series                                                                          
+fujairah_cargo                   30.4          35.4       7.0               48.4
+fujairah_tanker                 109.0         105.0      18.6               60.6
+jebel_ali_cargo                  73.8          82.6      10.6               17.4
+jebel_ali_tanker                 13.8          14.4       2.5                2.6
+strait_cargo                     55.4          65.4       2.4                5.8
+strait_tanker                    61.0          62.2       1.0                2.8
+
+Saved figures/gulf_pulse.png
+
+=== Exploratory (training): Brent forward return on port-traffic shock + controls ===
+             predictor  h       b     se  p_raw  ret_pct_after_10pct_drop     r2   n  p_holm
+jebel_ali_tanker_shock  1 -0.0020 0.0042 0.6426                    0.0207 0.0054 872     1.0
+jebel_ali_tanker_shock  3 -0.0079 0.0102 0.4399                    0.0828 0.0076 870     1.0
+jebel_ali_tanker_shock  7  0.0055 0.0169 0.7449                   -0.0580 0.0136 866     1.0
+ jebel_ali_cargo_shock  1  0.0036 0.0069 0.5985                   -0.0384 0.0055 872     1.0
+ jebel_ali_cargo_shock  3  0.0070 0.0161 0.6613                   -0.0742 0.0067 870     1.0
+ jebel_ali_cargo_shock  7  0.0054 0.0300 0.8581                   -0.0564 0.0134 866     1.0
+ fujairah_tanker_shock  1 -0.0011 0.0138 0.9356                    0.0118 0.0052 872     1.0
+ fujairah_tanker_shock  3 -0.0196 0.0274 0.4744                    0.2064 0.0074 870     1.0
+ fujairah_tanker_shock  7 -0.0033 0.0451 0.9412                    0.0350 0.0134 866     1.0
+  fujairah_cargo_shock  1 -0.0026 0.0044 0.5580                    0.0270 0.0056 872     1.0
+  fujairah_cargo_shock  3 -0.0115 0.0098 0.2411                    0.1212 0.0087 870     1.0
+  fujairah_cargo_shock  7 -0.0166 0.0158 0.2931                    0.1748 0.0157 866     1.0

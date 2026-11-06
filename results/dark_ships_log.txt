@@ -1,0 +1,21 @@
+Satellite passes 2022-01-03 → 2026-11-03: 454 (per year: {2022: 85, 2023: 85, 2024: 92, 2025: 90, 2026: 102})
+
+=== Radar ships per satellite pass (and AIS tanker crossings per day) ===
+                   passes  radar_with_ais  radar_ais_tankers  radar_dark  radar_dark_nonfishing  dark_share_pct  ais_tanker_crossings_per_day
+period                                                                                                                                       
+2025 (base)            90            32.4               13.4        53.3                   22.7            62.2                          61.0
+Jan–Feb 2026           14            32.2               13.1        66.4                   27.6            67.3                          62.2
+Mar 2026                8             3.6                0.9        27.6                   13.2            88.4                           1.0
+Apr–Jun 2026           21             7.9                1.9        19.0                    5.9            70.6                           3.3
+Jul 2026 → latest      58             9.4                2.3        25.6                    9.4            73.2                           2.5
+
+=== Same, as % of 2025 ===
+                   radar_with_ais  radar_ais_tankers  radar_dark  radar_dark_nonfishing  ais_tanker_crossings_per_day
+period                                                                                                               
+2025 (base)                 100.0              100.0       100.0                  100.0                         100.0
+Jan–Feb 2026                100.0               98.0       125.0                  121.0                         102.0
+Mar 2026                     11.0                7.0        52.0                   58.0                           2.0
+Apr–Jun 2026                 24.0               14.0        36.0                   26.0                           5.0
+Jul 2026 → latest            29.0               17.0        48.0                   41.0                           4.0
+
+Saved figures/dark_ships.png

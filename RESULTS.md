@@ -74,10 +74,59 @@ The smallest corrected p is 0.16. The 2017-start model also fails the held-out t
 - The oil market learns about real supply changes from many faster sources: news, OPEC, satellite firms that track tankers, and traders' own information. By the time a change shows up in free AIS data, it's already in the price.
 - Free AIS data reaches us about 3–6 days late. Even a real signal couldn't be traded on.
 
+## Extensions (exploratory: not pre-registered)
+
+These were in the project brief as extras. They were added after the main results, so treat them as descriptive, not as tests of a prediction.
+
+### 1. Gulf trade pulse: Dubai (Jebel Ali) vs Fujairah
+
+![Gulf trade pulse](figures/gulf_pulse.png)
+
+- **What:** ships present each day in a 12-nautical-mile circle around Jebel Ali (inside the Gulf) and a 10-nm circle around Fujairah (outside the strait, end of the pipeline that lets UAE oil skip Hormuz). Same GFW data, daily, one count per ship per day.
+- **Normal times (2025):** Jebel Ali had about 74 cargo ships and 14 tankers a day; Fujairah about 109 tankers and 30 cargo ships.
+- **March 2026:** everything fell, even Fujairah, which is outside the strait: Jebel Ali to 14–18% of normal, Fujairah to 17–23%.
+- **After March: Fujairah recovered and Jebel Ali didn't.**
+
+  | Ships present, % of 2025 average | Mar 2026 | Apr 2026 → latest | Oct 2026 |
+  |---|---|---|---|
+  | Strait tanker crossings | 2% | 5% | 2% |
+  | Jebel Ali cargo ships | 14% | 24% | 28% |
+  | Jebel Ali tankers | 18% | 19% | 22% |
+  | Fujairah tankers | 17% | 56% | 84% |
+  | Fujairah cargo ships | 23% | 159% | 244% |
+
+- **Reading:** trade moved to the port that doesn't need the strait. Cargo ships at Fujairah more than doubled (their goods can go on to Dubai by road), and tankers came back as the bypass pipeline kept working.
+- **Does port traffic predict Brent?** No. Using the H1 model in the training period, none of the four port measures (tankers and cargo at each port) predicts Brent at 1, 3 or 7 days (12 tests, all Holm p = 1.0).
+
+Script: `scripts/run_pulse.py`. Outputs: `results/gulf_pulse_periods.csv`, `results/gulf_pulse_regressions.csv`.
+
+### 2. Dark ships: did tankers keep crossing with AIS switched off?
+
+![Dark ships](figures/dark_ships.png)
+
+- **What:** Global Fishing Watch's Sentinel-1 satellite radar detections over the strait (the same area as the two crossing boxes). Radar sees a ship whether or not it broadcasts AIS. Each detection is matched to AIS or labelled "dark". The radar passes over every few days (454 passes since 2022), so the numbers are **ships seen per pass**.
+- **Normal times (2025):** per pass, 32 ships with AIS (13 of them tankers) and 53 dark ones. Most dark detections are small boats (dhows, fishing, local craft); 23 per pass are labelled "likely not fishing".
+- **After the closure:**
+
+  | Per satellite pass, % of 2025 | Mar 2026 | Apr–Jun 2026 | Jul 2026 → latest |
+  |---|---|---|---|
+  | AIS tanker crossings (this study) | 2% | 5% | 4% |
+  | Radar: tankers with AIS | 7% | 14% | 17% |
+  | Radar: dark, likely not fishing | 58% | 26% | 41% |
+  | Dark share of all radar detections | 88% | 71% | 73% (2025: 62%) |
+
+- **Reading:**
+  - **The collapse was real, not just ships hiding.** If tankers had kept sailing with AIS off, dark detections would have *risen*. They fell.
+  - **But some traffic probably carried on in the dark.** Dark vessels fell much less than AIS ships, so the dark share rose from 62% to 73–88%. Radar can't tell us whether those are tankers or whether they crossed.
+  - **The AIS tankers still in the strait are mostly parked.** In Oct 2026 only 54 tankers used AIS in the area (1,082 in Oct 2025), 92% of their positions were under 2 knots, and the most common flags were Iran, Nicaragua and Panama. That's why "radar tankers with AIS" (a snapshot, which counts parked ships every time) is higher than crossings (a flow).
+- **Caveats:** the "likely not fishing" label rises steadily over 2022–2025 (probably changes in the detection model or satellite coverage), so only compare against 2025. Radar misses boats under about 15 m and can't see very close to shore.
+
+Script: `scripts/run_dark.py`. Outputs: `results/dark_ships_periods.csv`, `data/processed/sar_passes.csv`.
+
 ## Limits (stated honestly)
 
 - **One crisis = one data point.** The test-period results rest on a single event, so they can't show a repeatable pattern.
-- **AIS coverage changes over time.** Before 2022 the counts had big yearly coverage swings (which is why the main sample starts in 2022). During the crisis, many ships reportedly switched AIS off, so the collapse may look bigger than it was.
+- **AIS coverage changes over time.** Before 2022 the counts had big yearly coverage swings (which is why the main sample starts in 2022). During the crisis, some ships kept moving without AIS: satellite radar shows dark traffic fell much less than AIS traffic (Extension 2). So the AIS collapse is real but somewhat exaggerated.
 - **Oil reacts to much more than Hormuz:** OPEC decisions, the US economy and interest rates, China's demand, other conflicts (e.g. the big moves in Oct–Nov 2026).
 - **Correlation is not causation.** Even the crisis results only show that ships and oil reacted to the same events, not that one caused the other.
 - **Our tanker count includes small tankers** (bunker and coastal), so its level is about 20% above IMF PortWatch's. The comparison with PortWatch is still pending; their export was broken.

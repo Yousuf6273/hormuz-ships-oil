@@ -134,3 +134,49 @@ def load_zone(zone):
 def _load(folder):
     files = sorted(folder.glob("*.parquet"))
     return pd.concat([pd.read_parquet(f) for f in files], ignore_index=True) if files else pd.DataFrame()
+
+
+# --- Satellite radar (Sentinel-1 SAR) detections: ships seen by radar, matched or not to an AIS signal ---
+SAR_DATASET = "public-global-sar-presence:latest"
+
+
+SAR_KINDS = {"ais": "matched='true'",                      # radar ship matched to an AIS signal
+             "dark": "matched='false'",                     # radar ship with no AIS signal
+             "dark_nonfishing": "matched='false' AND neural_vessel_type='Likely non-fishing'"}
+
+
+def sar_report(ring, start, end, filt):
+    """Daily radar detections inside `ring` that pass the 4Wings filter `filt`, by AIS gear type."""
+    params = {"datasets[0]": SAR_DATASET, "filters[0]": filt, "format": "JSON",
+              "temporal-resolution": "DAILY", "spatial-aggregation": "true", "group-by": "GEARTYPE",
+              "date-range": f"{start},{end}"}
+    head = {"Authorization": f"Bearer {_token()}"}
+    last = None
+    for attempt in range(8):
+        try:
+            js = _post_json(f"{BASE}/4wings/report", params, head, {"geojson": _geojson(ring)}, max_seconds=120)
+            rows = [row for e in js.get("entries", []) for v in e.values() for row in v]
+            return pd.DataFrame(rows, columns=["date", "geartype", "detections"])
+        except (RetryableError, requests.RequestException) as e:
+            last = e
+        print(f"  retry {attempt + 1} for SAR {start}..{end}: {last}", flush=True)
+        time.sleep(15 * (attempt + 1))
+    raise RuntimeError(f"GFW SAR report failed for {start}..{end}: {last}")
+
+
+def pull_sar_month(ring, month, refresh=False):
+    """Radar detections of each kind (SAR_KINDS) for one month, cached to data/raw/gfw/sar_daily/<month>.parquet."""
+    path = RAW / "gfw" / "sar_daily" / f"{month}.parquet"
+    if path.exists() and not refresh:
+        return pd.read_parquet(path)
+    start = pd.Timestamp(f"{month}-01")
+    end = start + pd.offsets.MonthBegin(1)
+    parts = [sar_report(ring, start.date(), end.date(), f).assign(kind=k) for k, f in SAR_KINDS.items()]
+    df = pd.concat(parts, ignore_index=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(path, index=False)
+    return df
+
+
+def load_sar():
+    return _load(RAW / "gfw" / "sar_daily")
