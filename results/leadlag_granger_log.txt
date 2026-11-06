@@ -1,0 +1,58 @@
+
+=== train: lead-lag (corr, raw p, BH-adjusted p) ===
+ direction  lag   corr  p_raw   n  p_bh period
+ships_lead    0  0.038  0.264 877 0.840  train
+ships_lead    1  0.044  0.241 876 0.840  train
+ships_lead    2  0.037  0.284 875 0.840  train
+ships_lead    3 -0.024  0.522 874 0.985  train
+ships_lead    4 -0.026  0.430 873 0.985  train
+ships_lead    5  0.056  0.070 872 0.734  train
+ships_lead    6  0.033  0.314 871 0.840  train
+ships_lead    7 -0.055  0.153 870 0.840  train
+ships_lead    8  0.027  0.476 869 0.985  train
+ships_lead    9 -0.001  0.981 868 0.985  train
+ships_lead   10  0.015  0.647 867 0.985  train
+ oil_leads    1 -0.009  0.808 876 0.985  train
+ oil_leads    2 -0.002  0.951 875 0.985  train
+ oil_leads    3 -0.010  0.814 874 0.985  train
+ oil_leads    4  0.008  0.807 873 0.985  train
+ oil_leads    5  0.009  0.792 872 0.985  train
+ oil_leads    6 -0.007  0.857 871 0.985  train
+ oil_leads    7  0.011  0.762 870 0.985  train
+ oil_leads    8 -0.039  0.320 869 0.840  train
+ oil_leads    9 -0.062  0.056 868 0.734  train
+ oil_leads   10 -0.001  0.985 867 0.985  train
+
+=== train: Granger ===
+   direction  lags_aic      F  p_raw   n  p_holm period
+ships -> oil         1 1.5904 0.2074 876  0.4149  train
+oil -> ships         1 0.0604 0.8059 876  0.8059  train
+
+=== test: lead-lag (corr, raw p, BH-adjusted p) ===
+ direction  lag   corr  p_raw   n  p_bh period
+ships_lead    0 -0.139  0.019 340 0.056   test
+ships_lead    1 -0.142  0.011 339 0.049   test
+ships_lead    2 -0.157  0.010 338 0.049   test
+ships_lead    3 -0.089  0.130 337 0.210   test
+ships_lead    4 -0.054  0.367 336 0.454   test
+ships_lead    5  0.005  0.938 335 0.938   test
+ships_lead    6 -0.012  0.869 334 0.913   test
+ships_lead    7 -0.026  0.672 333 0.743   test
+ships_lead    8  0.041  0.521 332 0.607   test
+ships_lead    9  0.054  0.365 331 0.454   test
+ships_lead   10  0.105  0.140 330 0.211   test
+ oil_leads    1 -0.176  0.069 339 0.121   test
+ oil_leads    2 -0.201  0.033 338 0.070   test
+ oil_leads    3 -0.178  0.065 337 0.121   test
+ oil_leads    4 -0.263  0.002 336 0.037   test
+ oil_leads    5 -0.139  0.161 335 0.225   test
+ oil_leads    6 -0.214  0.012 334 0.049   test
+ oil_leads    7 -0.188  0.021 333 0.056   test
+ oil_leads    8 -0.207  0.007 332 0.049   test
+ oil_leads    9 -0.186  0.027 331 0.063   test
+ oil_leads   10 -0.202  0.014 330 0.049   test
+
+=== test: Granger ===
+   direction  lags_aic      F  p_raw   n  p_holm period
+ships -> oil         1 7.5681 0.0061 339  0.0122   test
+oil -> ships         1 4.0957 0.0434 339  0.0434   test
