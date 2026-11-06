@@ -16,3 +16,4 @@ logs/
 
 # large intermediate files (rebuildable)
 data/processed/*.parquet
+paper/paper.html

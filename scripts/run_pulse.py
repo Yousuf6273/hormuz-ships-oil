@@ -66,7 +66,7 @@ tab.to_csv(ROOT / "results/gulf_pulse_periods.csv", index=False)
 # --- 2. Figure: 7-day averages indexed to 2025 = 100, one panel per place -----------------
 panels = [("strait", "Strait of Hormuz: crossings"), ("jebel_ali", f"{ZONES['jebel_ali']}: ships present"),
           ("fujairah", f"{ZONES['fujairah']}: ships present")]
-fig, axes = plt.subplots(3, 1, figsize=(11, 7.6), sharex=True, sharey=True)
+fig, axes = plt.subplots(3, 1, figsize=(11, 6.2), sharex=True, sharey=True)
 for ax, (p, title) in zip(axes, panels):
     shade_disruptions(ax)
     ax.axhline(100, color=TEXT_2, lw=0.8)

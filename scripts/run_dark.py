@@ -57,7 +57,7 @@ tab.round(2).to_csv(ROOT / "results/dark_ships_periods.csv")
 
 # --- 2. Figure: what radar saw per pass (top) and three measures indexed to 2025 (bottom) -----
 m = passes.resample("MS").mean()
-fig, (a1, a2) = plt.subplots(2, 1, figsize=(11, 6.6), sharex=True, gridspec_kw={"height_ratios": [1, 1]})
+fig, (a1, a2) = plt.subplots(2, 1, figsize=(11, 5.8), sharex=True, gridspec_kw={"height_ratios": [1, 1]})
 for ax in (a1, a2):
     shade_disruptions(ax)
 w = pd.Timedelta(days=24)
