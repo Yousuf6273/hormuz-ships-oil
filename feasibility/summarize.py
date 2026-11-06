@@ -94,14 +94,6 @@ ax.plot(mon.index, mon["cargo_total"], label="Cargo crossings / day", color="#c9
 ax.axvspan(pd.Timestamp("2026-02-28"), pd.Timestamp("2026-03-31"), color="#d64545", alpha=0.15, label="Mar 2026 restrictions")
 ax.axvline(pd.Timestamp(TEST_START), color="grey", ls="--", lw=1)
 ax.text(pd.Timestamp(TEST_START), ax.get_ylim()[1] * 0.95, " test period ->", color="grey", va="top")
-try:
-    px = load_prices("yahoo") if (ROOT / "data/raw/prices/yahoo_brent.parquet").exists() else load_prices("fred")
-    ax2 = ax.twinx()
-    br = px["brent"].resample("MS").mean().loc[mon.index.min():]
-    ax2.plot(br.index, br, color="black", lw=1, alpha=0.6, label="Brent ($/bbl, right)")
-    ax2.set_ylabel("Brent $/bbl")
-except FileNotFoundError:
-    pass
 ax.set_ylabel("crossings per day (monthly average)")
 ax.set_title("Strait of Hormuz crossings detected in Global Fishing Watch AIS data")
 ax.legend(loc="upper left", fontsize=8)
