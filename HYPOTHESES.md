@@ -125,4 +125,35 @@ Anything less is reported as "not supported" or "mixed", with the numbers. Null 
 
 ## Deviations
 
-_None yet. Any change after this commit is logged here with the date and reason._
+Any change after the original commit (7baf5bd) is logged here with the date and reason.
+
+### 2026-11-06: data decisions after the feasibility check (before any ship–oil analysis)
+
+All of these were decided from data-quality checks only (see [FEASIBILITY.md](FEASIBILITY.md)). No relationship between ships and oil prices had been computed when they were made.
+
+1. **Sample start = 2022-01-01.** Training 2022-01-01 → 2025-06-30. Test 2025-07-01 → latest data.
+   - Reason: GFW crossing counts in 2012–2021 show yearly AIS coverage swings. Tanker and cargo counts move in lockstep (monthly correlation 0.91–1.00), and the quietest month is only 10–79% of the busiest. From 2022 the counts are stable (89–94%) and tankers and cargo move separately.
+   - Ship data from before 2022 is still used to compute the 28-day baseline for early-2022 days.
+   - Robustness runs (labelled as such): start 2021-01-01, and start 2017-01-01.
+2. **Tanker = GFW `geartype == "TANKER"`.** GFW's `vesselType` has no tanker category. This covers oil, chemical and gas tankers, the closest match to AIS types 80–89.
+   - Placebos: cargo = `geartype == "CARGO"`; fishing = `vesselType == "FISHING"`.
+   - `CARGO_OR_TANKER` (unclear vessels) is left out of the main measure and added back only in a robustness check.
+3. **How a crossing is measured** (fixed before analysis):
+   - GFW hourly AIS presence in two boxes, 56.10–56.45°E and 56.55–56.90°E, between 26.00 and 26.95°N.
+   - A crossing = a vessel seen in one box and next seen in the other within 24 hours.
+   - Same-box sightings up to 3 hours apart count as one visit.
+   - At most one crossing per vessel per 6 hours.
+4. **Price sources:**
+   - Brent `BZ=F` and VIX `^VIX` from Yahoo, as planned.
+   - S&P 500 and WTI from FRED (`SP500`, `DCOILWTICO` spot), because this network blocks Yahoo's price server for those.
+   - FRED Brent spot (`DCOILBRENTEU`) is a robustness check. If the Yahoo S&P 500 and WTI become available later, they are a robustness check only; the main results are not switched.
+5. **Disruption periods inside the sample:**
+   - Training: 2024-04-13 → 04-30 and 2025-06-13 → 06-24.
+   - Test: 2026-02-28 → 03-31.
+   - The 2019 period appears only in the 2017-start robustness run.
+6. **How H2 is scored:**
+   - (a) In training, the interaction with the two training disruption periods.
+   - (b) In the test period, the same regression re-estimated on test data with the March 2026 dummy. This is the out-of-sample check.
+   - Holm correction across the 3 horizons, separately for each.
+7. **The fishing placebo is uninformative:** fewer than 1 crossing a day, as anticipated in the original plan. Cargo is the main placebo.
+8. **Lead–lag and Granger tests use the training period.** They are repeated on the test period and reported alongside.
