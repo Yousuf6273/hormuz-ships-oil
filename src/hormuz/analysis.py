@@ -111,3 +111,42 @@ def dummy_for(index, periods):
     for start, end in periods:
         d.loc[start:end] = 1
     return d
+
+
+def out_of_sample(train, test, x="tanker_total_shock", ret="brent"):
+    """Fit on training, forecast the test period unchanged. Benchmark = training mean return.
+
+    Reports out-of-sample R^2 (Campbell-Thompson) and the one-sided Clark-West test.
+    """
+    rows = []
+    for h in HORIZONS:
+        fit = predictive(train, x, h, ret)
+        cols = [x, *CONTROLS]
+        d = drop_tail(test, h)[[f"{ret}_fwd{h}", *cols]].dropna()
+        y = d[f"{ret}_fwd{h}"]
+        f_model = fit.predict(sm.add_constant(d[cols], has_constant="add"))
+        f_bench = pd.Series(drop_tail(train, h)[f"{ret}_fwd{h}"].mean(), index=d.index)
+        e_m, e_b = y - f_model, y - f_bench
+        r2_oos = 1 - (e_m ** 2).sum() / (e_b ** 2).sum()
+        cw = e_b ** 2 - (e_m ** 2 - (f_bench - f_model) ** 2)
+        cw_fit = sm.OLS(cw.values, np.ones(len(cw))).fit(cov_type="HAC", cov_kwds={"maxlags": max(h, 5)})
+        t_cw = cw_fit.tvalues[0]
+        from scipy.stats import norm
+        rows.append((h, r2_oos, t_cw, 1 - norm.cdf(t_cw), int(len(d))))
+    return pd.DataFrame(rows, columns=["h", "oos_r2", "clark_west_t", "p_one_sided", "n_test"])
+
+
+def event_study(t, day0, pre=10, post=20, est=(-250, -30)):
+    """Brent abnormal returns vs a market model (Brent on S&P 500) fitted on days est[0]..est[1]."""
+    idx = t.index
+    i0 = idx.get_loc(pd.Timestamp(day0))
+    est_rows = t.iloc[i0 + est[0]: i0 + est[1] + 1][["brent_ret", "sp500_ret"]].dropna()
+    mm = sm.OLS(est_rows["brent_ret"], sm.add_constant(est_rows["sp500_ret"])).fit()
+    sigma = np.sqrt(mm.scale)
+    w = t.iloc[i0 - pre: i0 + post + 1].copy()
+    w["event_day"] = np.arange(-pre, post + 1)
+    w["expected"] = mm.params["const"] + mm.params["sp500_ret"] * w["sp500_ret"].fillna(0)
+    w["abnormal"] = w["brent_ret"] - w["expected"]
+    w["car"] = w["abnormal"].cumsum()
+    w["car_t"] = w["car"] / (sigma * np.sqrt(np.arange(1, len(w) + 1)))
+    return w, mm, sigma
