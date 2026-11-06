@@ -8,3 +8,4 @@ yfinance>=0.2.40
 statsmodels>=0.14
 matplotlib>=3.8
 websockets>=12
+pytest>=8

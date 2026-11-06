@@ -8,6 +8,7 @@ Each series is cached under data/raw/prices/ as soon as it downloads, because Ya
 rate-limits often and a later failure should not throw away a good earlier download.
 """
 import io
+import signal
 import time
 
 import pandas as pd
@@ -30,9 +31,25 @@ def _save(s, source, name):
     return s
 
 
+def _yahoo_download(ticker, start, max_seconds=120):
+    """yf.download with a hard time limit (it can hang for hours when Yahoo throttles)."""
+    def _alarm(signum, frame):
+        raise TimeoutError(f"Yahoo gave no reply for {ticker} within {max_seconds}s")
+
+    old = signal.signal(signal.SIGALRM, _alarm)
+    signal.alarm(max_seconds)
+    try:
+        return yf.download(ticker, start=start, progress=False, auto_adjust=False)
+    except TimeoutError:
+        return pd.DataFrame()
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old)
+
+
 def pull_yahoo(name, start="2012-01-01", tries=4):
     for attempt in range(tries):
-        df = yf.download(YAHOO[name], start=start, progress=False, auto_adjust=False)
+        df = _yahoo_download(YAHOO[name], start)
         if not df.empty:
             return _save(df["Close"].squeeze(), "yahoo", name)
         time.sleep(30 * (attempt + 1))

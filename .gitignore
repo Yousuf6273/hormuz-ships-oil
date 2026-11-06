@@ -13,3 +13,6 @@ data/raw/
 # os
 .DS_Store
 logs/
+
+# large intermediate files (rebuildable)
+data/processed/*.parquet

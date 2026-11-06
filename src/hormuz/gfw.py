@@ -5,6 +5,7 @@ One HOURLY request per box per calendar month, saved to data/raw/gfw/presence_ho
 Each row is one vessel seen in one box during one UTC hour (GFW keeps one position per vessel per hour).
 """
 import os
+import signal
 import time
 
 import pandas as pd
@@ -39,21 +40,43 @@ def presence_report(ring, start, end, temporal="HOURLY"):
     last = None
     for attempt in range(8):
         try:
-            r = requests.post(f"{BASE}/4wings/report", params=params, headers=head,
-                              json={"geojson": _geojson(ring)}, timeout=300)
+            js = _post_json(f"{BASE}/4wings/report", params, head, {"geojson": _geojson(ring)})
+            rows = [row for e in js.get("entries", []) for v in e.values() for row in v]
+            return pd.DataFrame(rows)
+        except RetryableError as e:
+            last = e
         except requests.RequestException as e:
             last = e
-            time.sleep(15 * (attempt + 1))
-            continue
-        if r.status_code == 200:
-            rows = [row for e in r.json().get("entries", []) for v in e.values() for row in v]
-            return pd.DataFrame(rows)
-        last = f"HTTP {r.status_code}: {r.text[:300]}"
-        if r.status_code in (429, 500, 502, 503, 504, 524):
-            time.sleep(15 * (attempt + 1))
-            continue
-        break
+        print(f"  retry {attempt + 1} for {start}..{end}: {last}", flush=True)
+        time.sleep(15 * (attempt + 1))
     raise RuntimeError(f"GFW report failed for {start}..{end}: {last}")
+
+
+class RetryableError(Exception):
+    pass
+
+
+def _post_json(url, params, head, body, max_seconds=240):
+    """POST and read the whole reply, but give up after max_seconds in total.
+
+    The server sometimes keeps a connection open while dribbling out a few bytes, so
+    normal socket timeouts never fire. An OS alarm interrupts the request regardless.
+    """
+    def _alarm(signum, frame):
+        raise RetryableError(f"no complete reply after {max_seconds}s")
+
+    old_handler = signal.signal(signal.SIGALRM, _alarm)
+    signal.alarm(max_seconds)
+    try:
+        r = requests.post(url, params=params, headers=head, json=body, timeout=(20, 60))
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, old_handler)
+    if r.status_code in (429, 500, 502, 503, 504, 524):
+        raise RetryableError(f"HTTP {r.status_code}")
+    if r.status_code != 200:
+        raise RuntimeError(f"HTTP {r.status_code}: {r.text[:300]}")
+    return r.json()
 
 
 def month_path(box, month):
