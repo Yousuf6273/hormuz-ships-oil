@@ -40,7 +40,8 @@ brent = px["brent"].dropna()
 
 st.title("Can ships predict oil prices?")
 st.caption("Tanker crossings through the Strait of Hormuz vs. Brent crude. A Year 13 independent research project. "
-           "Ship data: **Powered by [Global Fishing Watch](https://globalfishingwatch.org)** (CC BY-NC 4.0, non-commercial).")
+           "Ship data: **Powered by [Global Fishing Watch](https://globalfishingwatch.org)** (CC BY-NC 4.0, non-commercial). "
+           "Public website: [yousuf6273.github.io/hormuz-ships-oil](https://yousuf6273.github.io/hormuz-ships-oil/).")
 
 # --- headline numbers -------------------------------------------------------
 row = d.loc[last_day]

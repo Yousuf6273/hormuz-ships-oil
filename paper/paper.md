@@ -196,7 +196,7 @@ Ship data is excellent at showing *what happened*: the collapse in traffic, the 
     - KaiErikNiermann/hormuz-crossing-tracker: dividing meridian and de-duplication (the repository was no longer public).
     - yasumorishima/hormuz-ship-tracker: transit logic, the 6-hour window, port zones, and the finding that aisstream doesn't cover the strait.
     - Blurjp/QuantTrade: radar ship detection.
-- **Code, data and full results:** the project repository (README.md, HYPOTHESES.md, RESULTS.md), including a live dashboard. Code was written with help from an AI coding assistant (Claude, by Anthropic).
+- **Code, data and full results:** github.com/Yousuf6273/hormuz-ships-oil (README.md, HYPOTHESES.md, RESULTS.md). **Website:** yousuf6273.github.io/hormuz-ships-oil. Code was written with help from an AI coding assistant (Claude, by Anthropic).
 
 ## References
 

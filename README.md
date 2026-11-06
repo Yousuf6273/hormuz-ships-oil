@@ -1,5 +1,7 @@
 # Can Ships Predict Oil Prices?
 
+**🌐 Website: [yousuf6273.github.io/hormuz-ships-oil](https://yousuf6273.github.io/hormuz-ships-oil/)** · **📄 [Paper (PDF)](paper/paper.pdf)** · **📊 [All results](RESULTS.md)**
+
 An independent research project on whether changes in daily tanker crossings through the **Strait of Hormuz** lead **Brent crude** price moves, or whether the market moves first.
 
 - Hypotheses and the full analysis plan were written and committed **before** any data was downloaded: see [HYPOTHESES.md](HYPOTHESES.md).
@@ -58,9 +60,20 @@ cp .env.example .env   # then paste your GFW token and aisstream key into .env
 
 # paper (needs Google Chrome for the PDF step)
 .venv/bin/python paper/build.py
+
+# website (GitHub Pages serves docs/; rebuild after updating data, then commit and push)
+.venv/bin/python scripts/build_site.py
 ```
 
 ## Dashboard
+
+**One click (Mac):** run this once, then double-click **Hormuz Dashboard** on your Desktop. It starts the dashboard (if it isn't already running) and opens it in your browser.
+
+```bash
+bash scripts/make_mac_app.sh
+```
+
+Or start it by hand:
 
 ```bash
 .venv/bin/streamlit run app/dashboard.py
