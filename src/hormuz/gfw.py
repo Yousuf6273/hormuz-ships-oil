@@ -4,6 +4,7 @@ Data: Global Fishing Watch, AIS Vessel Presence (public-global-presence), CC BY-
 One HOURLY request per box per calendar month, saved to data/raw/gfw/presence_hourly/<box>/<YYYY-MM>.parquet.
 Each row is one vessel seen in one box during one UTC hour (GFW keeps one position per vessel per hour).
 """
+import math
 import os
 import signal
 import time
@@ -12,7 +13,7 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
-from .config import BOXES, RAW, ROOT
+from .config import BOXES, RAW, ROOT, ZONES
 
 load_dotenv(ROOT / ".env")
 BASE = "https://gateway.api.globalfishingwatch.org/v3"
@@ -83,14 +84,35 @@ def month_path(box, month):
     return RAW / "gfw" / "presence_hourly" / box / f"{month}.parquet"
 
 
+def circle(lat, lon, radius_nm, n=32):
+    """Polygon ring ([lon, lat] points) approximating a circle of radius_nm nautical miles."""
+    dlat = radius_nm / 60
+    dlon = radius_nm / (60 * math.cos(math.radians(lat)))
+    pts = [[lon + dlon * math.cos(2 * math.pi * k / n), lat + dlat * math.sin(2 * math.pi * k / n)] for k in range(n)]
+    return pts + [pts[0]]
+
+
 def pull_month(box, month, refresh=False):
     """Download one box-month (month like '2025-01') unless already cached. Returns row count."""
-    path = month_path(box, month)
+    return _pull(BOXES[box], month_path(box, month), month, "HOURLY", refresh)
+
+
+def zone_path(zone, month):
+    return RAW / "gfw" / "zones_daily" / zone / f"{month}.parquet"
+
+
+def pull_zone_month(zone, month, refresh=False):
+    """Daily per-vessel presence in a port zone (see config.ZONES)."""
+    z = ZONES[zone]
+    return _pull(circle(z["lat"], z["lon"], z["radius_nm"]), zone_path(zone, month), month, "DAILY", refresh)
+
+
+def _pull(ring, path, month, temporal, refresh):
     if path.exists() and not refresh:
         return len(pd.read_parquet(path))
     start = pd.Timestamp(f"{month}-01")
     end = start + pd.offsets.MonthBegin(1)
-    df = presence_report(BOXES[box], start.date(), end.date())
+    df = presence_report(ring, start.date(), end.date(), temporal=temporal)
     if not df.empty:
         df = df[[c for c in KEEP if c in df.columns]]
         df = df[pd.to_datetime(df["date"]).dt.strftime("%Y-%m") == month]
@@ -102,5 +124,13 @@ def pull_month(box, month, refresh=False):
 
 
 def load_presence(box):
-    files = sorted((RAW / "gfw" / "presence_hourly" / box).glob("*.parquet"))
+    return _load(RAW / "gfw" / "presence_hourly" / box)
+
+
+def load_zone(zone):
+    return _load(RAW / "gfw" / "zones_daily" / zone)
+
+
+def _load(folder):
+    files = sorted(folder.glob("*.parquet"))
     return pd.concat([pd.read_parquet(f) for f in files], ignore_index=True) if files else pd.DataFrame()
