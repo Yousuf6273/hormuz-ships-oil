@@ -93,10 +93,11 @@ with st.expander("Charts from the study"):
 
 # --- update -----------------------------------------------------------------------
 st.subheader("Update the data")
-st.caption("Re-downloads the last 2 months of GFW data and the latest prices, then rebuilds the counts (a few minutes).")
-if st.button("Update now"):
+st.caption("Re-downloads the last 2 months of GFW data and the latest prices, rebuilds the counts, then publishes the "
+           "public website (a few minutes). The website's Refresh button shows the new data about a minute later.")
+if st.button("Update data and website"):
     with st.status("Updating...", expanded=True) as status:
-        proc = subprocess.Popen([sys.executable, str(ROOT / "scripts/update_latest.py")], stdout=subprocess.PIPE,
+        proc = subprocess.Popen([sys.executable, str(ROOT / "scripts/update_latest.py"), "--publish"], stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT, text=True, cwd=ROOT)
         for line in proc.stdout:
             if line.strip() and "Warning" not in line:

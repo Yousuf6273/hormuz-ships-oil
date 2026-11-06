@@ -31,6 +31,11 @@
   h2 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
   h3 { font-size: 17px; margin: 0 0 8px; }
   .sub { color: var(--ink-2); margin: 0 0 18px; font-size: 15px; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 6px; }
+  .head h2 { margin: 0; }
+  button.btn { cursor: pointer; font-family: inherit; }
+  button.btn:disabled { opacity: 0.7; cursor: progress; }
+  .status { font-size: 14px; color: var(--ink-2); margin: -8px 0 16px; min-height: 1.4em; }
   .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 18px; }
   .tile { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
   .tile .label { color: var(--ink-2); font-size: 13px; }
@@ -77,22 +82,26 @@
   </header>
 
   <section>
-    <h2>Latest data</h2>
+    <div class="head">
+      <h2>Latest data</h2>
+      <button id="refresh" class="btn primary" type="button">↻ Refresh</button>
+    </div>
     <p class="sub">Ship data from Global Fishing Watch arrives about 3 to 6 days late. Free live AIS doesn't cover the strait.</p>
+    <p id="status" class="status" role="status" aria-live="polite">Ship data to {{LAST_DAY}}. Published {{PUBLISHED_LABEL}}.</p>
     <div class="tiles">
-      <div class="tile"><div class="label">Latest ship data</div><div class="value">{{LAST_DAY}}</div><div class="note">UTC day</div></div>
-      <div class="tile"><div class="label">Tanker crossings that day</div><div class="value">{{CROSSINGS}}</div><div class="note">{{IN}} in · {{OUT}} out · 28-day average {{AVG28}}</div></div>
-      <div class="tile"><div class="label">Before March 2026</div><div class="value">{{BEFORE}} a day</div><div class="note">Jan 2025 to Feb 2026 average</div></div>
-      <div class="tile"><div class="label">Brent, {{BRENT_DAY}}</div><div class="value">{{BRENT}}</div><div class="note">{{BRENT_CHG}} on the day</div></div>
+      <div class="tile"><div class="label">Latest ship data</div><div class="value" id="last_day">{{LAST_DAY}}</div><div class="note">UTC day</div></div>
+      <div class="tile"><div class="label">Tanker crossings that day</div><div class="value" id="crossings">{{CROSSINGS}}</div><div class="note" id="inout">{{INOUT}}</div></div>
+      <div class="tile"><div class="label">Before March 2026</div><div class="value" id="before">{{BEFORE}}</div><div class="note">Jan 2025 to Feb 2026 average</div></div>
+      <div class="tile"><div class="label" id="brent_label">{{BRENT_LABEL}}</div><div class="value" id="brent">{{BRENT}}</div><div class="note" id="brent_chg">{{BRENT_CHG}}</div></div>
     </div>
     <div class="chart">
       <h3>Last 90 days: tanker crossings through the strait</h3>
-      <div id="ships" class="vis"></div>
+      <div id="chart-ships" class="vis"></div>
       <h3 style="margin-top:10px">Brent crude, same dates</h3>
-      <div id="brent" class="vis"></div>
+      <div id="chart-brent" class="vis"></div>
     </div>
-    <p class="callout">Hover over the bars and points for exact numbers. For the live version (live AIS check and an
-      update button), run the dashboard from the repository: <code>.venv/bin/streamlit run app/dashboard.py</code></p>
+    <p class="callout">Hover over the bars and points for exact numbers. <b>Refresh</b> loads the newest published data
+      without reloading the page. New data is published from the project's dashboard.</p>
   </section>
 
   <section>
@@ -139,7 +148,7 @@
     <p><b>Powered by <a href="https://globalfishingwatch.org">Global Fishing Watch</a>.</b> AIS vessel presence and
       Sentinel-1 radar detections © Global Fishing Watch, used under CC BY-NC 4.0 for non-commercial research.
       Prices: Yahoo Finance; FRED, Federal Reserve Bank of St. Louis. Live AIS: aisstream.io.</p>
-    <p>Correlation is not causation, and AIS misses ships that switch their transponders off. Page built {{BUILT}}.</p>
+    <p>Correlation is not causation, and AIS misses ships that switch their transponders off.</p>
   </footer>
 </div>
 
@@ -148,8 +157,35 @@
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@7.0.2"></script>
 <script>
   const opts = { actions: false, renderer: "svg" };
-  vegaEmbed("#ships", {{SPEC_SHIPS}}, opts).catch(console.error);
-  vegaEmbed("#brent", {{SPEC_BRENT}}, opts).catch(console.error);
+  const $ = (id) => document.getElementById(id);
+  const FIELDS = ["last_day", "crossings", "inout", "before", "brent_label", "brent", "brent_chg"];
+  let shown = null;
+
+  async function load(byButton) {
+    const btn = $("refresh"), status = $("status");
+    btn.disabled = true;
+    if (byButton) { btn.textContent = "↻ Checking…"; status.textContent = "Checking for new data…"; }
+    try {
+      // The timestamp skips every cache, so the button always sees the newest published file.
+      const r = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const d = await r.json();
+      const isNew = shown !== null && d.published !== shown;
+      FIELDS.forEach((k) => { $(k).textContent = d[k]; });
+      await Promise.all([vegaEmbed("#chart-ships", d.spec_ships, opts), vegaEmbed("#chart-brent", d.spec_brent, opts)]);
+      const lead = !byButton ? "" : isNew ? "Updated with new data. " : "You're already seeing the newest data. ";
+      status.textContent = `${lead}Ship data to ${d.last_day}. Published ${d.published_label}.`;
+      shown = d.published;
+    } catch (e) {
+      status.textContent = "Couldn't load the data (" + e.message + "). Check your connection and try again.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "↻ Refresh";
+    }
+  }
+
+  $("refresh").addEventListener("click", () => load(true));
+  load(false);
 </script>
 </body>
 </html>

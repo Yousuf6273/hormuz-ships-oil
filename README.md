@@ -61,8 +61,8 @@ cp .env.example .env   # then paste your GFW token and aisstream key into .env
 # paper (needs Google Chrome for the PDF step)
 .venv/bin/python paper/build.py
 
-# website (GitHub Pages serves docs/; rebuild after updating data, then commit and push)
-.venv/bin/python scripts/build_site.py
+# website (GitHub Pages serves docs/): rebuild and push it
+.venv/bin/python scripts/publish_site.py
 ```
 
 ## Dashboard
@@ -80,7 +80,8 @@ Or start it by hand:
 ```
 
 - Shows the latest day of GFW data (about 3–6 days behind), tanker crossings in and out, a 90-day chart of crossings above Brent, and the key findings.
-- **Update now** re-downloads the last 2 months of GFW data and the latest prices, then rebuilds the counts (`scripts/update_latest.py`).
+- **Update data and website** re-downloads the last 2 months of GFW data and the latest prices, rebuilds the counts, then rebuilds the public website and pushes it to GitHub (`scripts/update_latest.py --publish`). About a minute later, the website's **↻ Refresh** button shows the new data to anyone viewing it.
+- The website can't download ship data by itself: that would put the GFW key on a public page. So new data always comes from this dashboard (or `scripts/publish_site.py`).
 - The **live AIS** panel listens to aisstream.io for 20 seconds. It currently receives nothing from the strait (free receivers don't cover it), and says so. A 5-second worldwide check shows the feed itself is working.
 
 ## Repository layout

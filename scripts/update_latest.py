@@ -1,4 +1,7 @@
-"""Refresh the newest data: last 2 months of GFW crossings, FRED prices (and Yahoo if reachable)."""
+"""Refresh the newest data: last 2 months of GFW crossings, FRED prices (and Yahoo if reachable).
+
+Add --publish to also rebuild the website and push it to GitHub Pages.
+"""
 import subprocess
 import sys
 from pathlib import Path
@@ -20,3 +23,5 @@ for name in YAHOO:
 d = build_daily()
 print(f"daily crossings rebuilt: {d.index.min().date()} -> {d.index.max().date()}", flush=True)
 subprocess.run([sys.executable, str(ROOT / "scripts/build_table.py")], check=True)
+if "--publish" in sys.argv:
+    subprocess.run([sys.executable, str(ROOT / "scripts/publish_site.py")], check=True)
