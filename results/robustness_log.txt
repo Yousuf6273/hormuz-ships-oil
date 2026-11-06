@@ -1,0 +1,37 @@
+                                 check  h       b  p_raw  p_holm  ret_pct_after_10pct_drop    n
+main (2022 start, Yahoo Brent futures)  1  0.0081 0.2512  0.7537                   -0.0851  872
+main (2022 start, Yahoo Brent futures)  3  0.0113 0.3201  0.7537                   -0.1188  870
+main (2022 start, Yahoo Brent futures)  7  0.0113 0.4623  0.7537                   -0.1189  866
+                      start 2021-01-01  1  0.0065 0.2295  0.4590                   -0.0689 1124
+                      start 2021-01-01  3  0.0102 0.2871  0.4590                   -0.1071 1122
+                      start 2021-01-01  7  0.0175 0.1404  0.4212                   -0.1844 1118
+                      start 2017-01-01  1  0.0040 0.1261  0.3783                   -0.0421 2131
+                      start 2017-01-01  3  0.0047 0.3730  0.7461                   -0.0496 2129
+                      start 2017-01-01  7  0.0055 0.5470  0.7461                   -0.0585 2125
+          Brent spot (FRED) as outcome  1  0.0086 0.2219  0.6657                   -0.0908  855
+          Brent spot (FRED) as outcome  3 -0.0002 0.9860  1.0000                    0.0020  853
+          Brent spot (FRED) as outcome  7  0.0092 0.5543  1.0000                   -0.0969  849
+                        WTI as outcome  1  0.0087 0.2064  0.6191                   -0.0911  862
+                        WTI as outcome  3  0.0129 0.2694  0.6191                   -0.1363  860
+                        WTI as outcome  7  0.0098 0.5410  0.6191                   -0.1030  856
+          predictor: day-on-day change  1  0.0009 0.8556  1.0000                   -0.0092  872
+          predictor: day-on-day change  3  0.0062 0.2557  0.7670                   -0.0658  870
+          predictor: day-on-day change  7  0.0032 0.6072  1.0000                   -0.0334  866
+            predictor: 7-day vs 28-day  1  0.0091 0.4880  1.0000                   -0.0958  872
+            predictor: 7-day vs 28-day  3  0.0167 0.6194  1.0000                   -0.1759  870
+            predictor: 7-day vs 28-day  7  0.0194 0.7474  1.0000                   -0.2043  866
+               predictor: inbound only  1 -0.0018 0.6932  1.0000                    0.0187  872
+               predictor: inbound only  3 -0.0001 0.9869  1.0000                    0.0016  870
+               predictor: inbound only  7  0.0119 0.2905  0.8714                   -0.1252  866
+              predictor: outbound only  1  0.0085 0.0521  0.1564                   -0.0894  872
+              predictor: outbound only  3  0.0104 0.1092  0.2184                   -0.1100  870
+              predictor: outbound only  7  0.0002 0.9865  0.9865                   -0.0018  866
+        tankers + unclear cargo/tanker  1  0.0077 0.2748  0.8244                   -0.0813  872
+        tankers + unclear cargo/tanker  3  0.0102 0.3686  0.8244                   -0.1075  870
+        tankers + unclear cargo/tanker  7  0.0087 0.5673  0.8244                   -0.0917  866
+
+=== Held-out test with the 2017-start training model ===
+ h  oos_r2  clark_west_t  p_one_sided  n_test
+ 1 -0.0525       -1.7893       0.9632     337
+ 3 -0.0467       -2.0085       0.9777     335
+ 7 -0.0285       -0.8456       0.8011     331

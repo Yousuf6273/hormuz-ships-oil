@@ -3,7 +3,7 @@
 An independent research project on whether changes in daily tanker crossings through the **Strait of Hormuz** lead **Brent crude** price moves, or whether the market moves first.
 
 - Hypotheses and the full analysis plan were written and committed **before** any data was downloaded: see [HYPOTHESES.md](HYPOTHESES.md).
-- Status: data feasibility check (step 1).
+- Status: core analysis done. **Answer: in normal times, no. In the March 2026 crisis, ships and oil reacted to the same news, with oil moving first.** See [RESULTS.md](RESULTS.md) and [FEASIBILITY.md](FEASIBILITY.md).
 
 ## Data sources
 
@@ -30,12 +30,28 @@ python3.12 -m venv .venv
 cp .env.example .env   # then paste your GFW token and aisstream key into .env
 ```
 
+## Reproduce
+
+```bash
+.venv/bin/python scripts/pull_gfw.py 2012-01 2026-11   # ~1 hour, cached by month
+.venv/bin/python scripts/pull_prices.py
+.venv/bin/python feasibility/summarize.py              # daily crossings + coverage report
+.venv/bin/python scripts/build_table.py
+.venv/bin/python scripts/make_charts.py
+.venv/bin/python scripts/run_leadlag_granger.py
+.venv/bin/python scripts/run_regressions.py
+.venv/bin/python scripts/run_event_oos.py
+.venv/bin/python scripts/run_robustness.py
+.venv/bin/python -m pytest -q tests
+```
+
 ## Repository layout
 
 ```
 HYPOTHESES.md          pre-registered hypotheses and analysis plan
 src/hormuz/            pipeline code (config, GFW download, crossing detection, prices)
-scripts/               command-line entry points (pull data)
+scripts/               command-line entry points (pull data, build table, charts, tests)
+results/               test outputs (CSV + logs)
 feasibility/           data feasibility checks
 data/raw/              cached downloads (not committed; rebuild with scripts/)
 data/processed/        daily crossing counts
