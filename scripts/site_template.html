@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can Ships Predict Oil Prices?</title>
+<meta name="description" content="Do daily tanker crossings through the Strait of Hormuz lead Brent crude, or does the market move first? A pre-registered research project with free ship-tracking data.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛢️</text></svg>">
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --line: #e4e3df;
+    --accent: #2a78d6; --accent-ink: #ffffff; --soft: #f3f2ee;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--surface); color: var(--ink);
+         font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 48px 0 24px; }
+  .kicker { color: var(--ink-2); font-size: 14px; margin: 0 0 6px; }
+  h1 { font-size: clamp(30px, 6vw, 46px); line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .answer { font-size: 19px; margin: 0 0 20px; max-width: 760px; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--line);
+         color: var(--ink); background: var(--card); text-decoration: none; font-weight: 600; font-size: 15px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn:hover { border-color: var(--ink-2); }
+  .btn.primary:hover { filter: brightness(0.95); }
+  section { padding: 28px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h3 { font-size: 17px; margin: 0 0 8px; }
+  .sub { color: var(--ink-2); margin: 0 0 18px; font-size: 15px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 18px; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .tile .label { color: var(--ink-2); font-size: 13px; }
+  .tile .value { font-size: 26px; font-weight: 700; line-height: 1.25; font-variant-numeric: tabular-nums; }
+  .tile .note { color: var(--ink-2); font-size: 13px; }
+  .chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px 6px; }
+  .chart h3 { font-size: 15px; color: var(--ink-2); font-weight: 600; margin: 0 0 4px; }
+  .vis { width: 100%; }
+  .callout { background: var(--soft); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 6px;
+             font-size: 15px; margin: 14px 0 0; }
+  ul.findings { padding-left: 20px; margin: 0; }
+  ul.findings li { margin: 0 0 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 4px; }
+  figcaption { color: var(--ink-2); font-size: 14px; margin-top: 8px; }
+  ol.method { padding-left: 20px; margin: 0; }
+  ol.method li { margin: 0 0 6px; }
+  code { background: var(--soft); padding: 2px 6px; border-radius: 4px; font-size: 14px; }
+  footer { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--ink-2); font-size: 14px; }
+  a { color: var(--accent); }
+  @media (max-width: 760px) {
+    header { padding-top: 32px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    .tile .value { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">Independent research project · Yousuf · Year 13, Dubai · November 2026</p>
+    <h1>Can ships predict oil prices?</h1>
+    <p class="answer">I counted every tanker crossing the Strait of Hormuz each day for nearly five years and tested whether
+      fewer crossings warn of a higher Brent oil price. <b>In normal times they don't. In the March 2026 crisis, the oil
+      market moved first.</b></p>
+    <div class="buttons">
+      <a class="btn primary" href="paper.pdf">Read the paper (PDF, 6 pages)</a>
+      <a class="btn" href="{{REPO}}">Code and data on GitHub</a>
+      <a class="btn" href="{{REPO}}/blob/main/HYPOTHESES.md">Pre-registration</a>
+      <a class="btn" href="{{REPO}}/blob/main/RESULTS.md">All results</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Latest data</h2>
+    <p class="sub">Ship data from Global Fishing Watch arrives about 3 to 6 days late. Free live AIS doesn't cover the strait.</p>
+    <div class="tiles">
+      <div class="tile"><div class="label">Latest ship data</div><div class="value">{{LAST_DAY}}</div><div class="note">UTC day</div></div>
+      <div class="tile"><div class="label">Tanker crossings that day</div><div class="value">{{CROSSINGS}}</div><div class="note">{{IN}} in · {{OUT}} out · 28-day average {{AVG28}}</div></div>
+      <div class="tile"><div class="label">Before March 2026</div><div class="value">{{BEFORE}} a day</div><div class="note">Jan 2025 to Feb 2026 average</div></div>
+      <div class="tile"><div class="label">Brent, {{BRENT_DAY}}</div><div class="value">{{BRENT}}</div><div class="note">{{BRENT_CHG}} on the day</div></div>
+    </div>
+    <div class="chart">
+      <h3>Last 90 days: tanker crossings through the strait</h3>
+      <div id="ships" class="vis"></div>
+      <h3 style="margin-top:10px">Brent crude, same dates</h3>
+      <div id="brent" class="vis"></div>
+    </div>
+    <p class="callout">Hover over the bars and points for exact numbers. For the live version (live AIS check and an
+      update button), run the dashboard from the repository: <code>.venv/bin/streamlit run app/dashboard.py</code></p>
+  </section>
+
+  <section>
+    <h2>What I found</h2>
+    <p class="sub">The hypotheses and tests were written down and committed before any data was downloaded.</p>
+    <ul class="findings">
+      <li><b>In normal times (2022 to mid-2025), ships don't predict oil, and oil doesn't predict ships.</b> A 10% drop in
+        tanker crossings was followed by Brent moving about −0.1% (the wrong direction, not significant). On data it hadn't
+        seen (July 2025 onwards), the model did worse than simply assuming the average.</li>
+      <li><b>In the March 2026 crisis, both reacted to the same news, and oil moved first.</b> Brent rose about 8% more than
+        stocks explain in the two weeks <i>before</i> ships stopped. Ships stopped over the weekend of 28 Feb to 1 Mar;
+        Brent jumped +7% at Monday's close, its first chance to react.</li>
+      <li><b>After the closure, oil kept moving</b> (+57% relative to stocks by day 20) while crossings stayed near zero.
+        The ship count had nothing new to say.</li>
+      <li><b>Cargo and fishing boats (the placebo) show no signal either.</b> The pre-registered hypothesis is not supported.</li>
+      <li><b>Extensions:</b> after the closure, trade moved to Fujairah, outside the strait, while Dubai's Jebel Ali stayed
+        at about a quarter of normal. Satellite radar confirms the traffic collapse was real, though some ships kept
+        moving without AIS.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>The evidence</h2>
+    <p class="sub">Click any chart to open it full size.</p>
+    <div class="grid2">
+      {{FIGURES}}
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="method">
+      <li><b>Count crossings.</b> Two boxes either side of 56.5°E. A ship seen in one box and then the other within 24 hours
+        is one crossing (at most one per ship every 6 hours). Tankers are Global Fishing Watch's tanker class.</li>
+      <li><b>No peeking at the future.</b> Each trading day only uses ships counted up to the end of the previous day.</li>
+      <li><b>Test both directions.</b> Regressions with stock-market and VIX controls, lead–lag correlations, Granger tests
+        both ways, and an event study for March 2026.</li>
+      <li><b>Keep score honestly.</b> A held-out test period (from July 2025), a placebo (cargo and fishing), and corrections
+        for running many tests.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <p><b>Powered by <a href="https://globalfishingwatch.org">Global Fishing Watch</a>.</b> AIS vessel presence and
+      Sentinel-1 radar detections © Global Fishing Watch, used under CC BY-NC 4.0 for non-commercial research.
+      Prices: Yahoo Finance; FRED, Federal Reserve Bank of St. Louis. Live AIS: aisstream.io.</p>
+    <p>Correlation is not causation, and AIS misses ships that switch their transponders off. Page built {{BUILT}}.</p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@6.2.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@7.0.2"></script>
+<script>
+  const opts = { actions: false, renderer: "svg" };
+  vegaEmbed("#ships", {{SPEC_SHIPS}}, opts).catch(console.error);
+  vegaEmbed("#brent", {{SPEC_BRENT}}, opts).catch(console.error);
+</script>
+</body>
+</html>
